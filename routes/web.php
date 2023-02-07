@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Database\Schema\PostgresBuilder;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +16,21 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('guest.home');
 })->name('home');
 
 Auth::routes();
 
-Route::middleware('auth')->namespace('Admin')->name('admin.')->prefix('admin')->group(function () {
-    Route::get('/home', 'HomeController@index')->name('home');
-    Route::resource('post', 'PostController');
+// Route::get('/home', 'Admin\HomeController@index')->name('admin.home');
+
+Route::middleware('auth')
+    ->namespace('Admin')
+    ->name('admin.')
+    ->prefix('admin')
+    ->group(function () {
+        Route::get('/', 'PageController@dashboard')->name('dashboard');
+        Route::resource('posts', 'PostController');
+        Route::get('/categories/slug', 'CategoryController@slug')->name('categories.slug');
+        Route::resource('categories', 'CategoryController');
+        Route::resource('tags', 'TagController');
 });
